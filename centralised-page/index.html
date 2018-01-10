@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auth0 Hosted Login</title>
+  <!--[if IE 8]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/ie8/0.2.5/ie8.js"></script>
+  <![endif]-->
+
+  <!--[if lte IE 9]>
+    <script src="https://cdn.auth0.com/js/polyfills/1.0/base64.min.js"></script>
+    <script src="https://cdn.auth0.com/js/polyfills/1.0/es5-shim.min.js"></script>
+  <![endif]-->
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">  
+  <style>
+  
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+body {
+  background: rgba(19, 35, 47, 0.9);
+}
+
+a {
+  text-decoration: none;
+  color: #000000;
+  -webkit-transition: .5s ease;
+  transition: .5s ease;
+}
+a:hover {
+  color: #000000;
+}
+
+.auth0-form {
+  background: #ffffff;
+  padding: 20px;
+  width: 376px;
+  margin: 80px auto;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
+  height: 100%;
+}
+
+@media screen and (max-width: 480px) {
+  .auth0-form {
+    background: #ffffff;
+    padding: 20px;
+    width: 100%;
+    margin: 80px auto;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
+    height: 100%;
+  }
+}
+
+.login-header {
+  text-align: center;
+}
+
+.login-header img {
+  width: 75px;
+}
+
+.tab-group {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 40px 0;
+}
+.tab-group:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.tab-group li a {
+  display: block;
+  text-decoration: none;
+  padding: 8px;
+  background: rgba(160, 179, 176, 0.25);
+  color: #a0b3b0;
+  font-size: 16px;
+  float: left;
+  width: 50%;
+  text-align: center;
+  cursor: pointer;
+  -webkit-transition: .5s ease;
+  transition: .5s ease;
+}
+.tab-group li a:hover {
+  background: #EB5424;
+  color: #ffffff;
+}
+.tab-group .active a {
+  background: #EB5424;
+  color: #ffffff;
+}
+
+.tab-content > div:last-child {
+  display: none;
+}
+
+h2 {
+  text-align: center;
+  color: #000000;
+  font-weight: 300;
+  margin: 0 0 40px;
+}
+
+label {
+  position: absolute;
+  -webkit-transform: translateY(6px);
+          transform: translateY(6px);
+  left: 13px;
+  color: #000000;
+  -webkit-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+  -webkit-backface-visibility: hidden;
+  pointer-events: none;
+  font-size: 14px;
+}
+label .req {
+  margin: 2px;
+  color: #EB5424;
+}
+
+label.active {
+  -webkit-transform: translateY(-20px);
+          transform: translateY(-20px);
+  left: 2px;
+  font-size: 12px;
+}
+label.active .req {
+  opacity: 0;
+}
+
+label.highlight {
+  color: #000000;
+}
+
+input, textarea {
+  font-size: 18px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 5px 10px;
+  background: none;
+  background-image: none;
+  border: 1px solid #a0b3b0;
+  color: #000000;
+  border-radius: 0;
+  -webkit-transition: border-color .25s ease, box-shadow .25s ease;
+  transition: border-color .25s ease, box-shadow .25s ease;
+}
+
+input:focus, textarea:focus {
+  outline: 0;
+  border-color: #1ab188;
+}
+
+textarea {
+  border: 2px solid #a0b3b0;
+  resize: vertical;
+}
+
+.field-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.top-row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.top-row > div {
+  float: left;
+  width: 48%;
+  margin-right: 4%;
+}
+.top-row > div:last-child {
+  margin: 0;
+}
+
+.button {
+  border: 0;
+  outline: none;
+  border-radius: 0;
+  padding: 14px 0;
+  font-size: 14px;
+  font-weight: 200;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  background: #EB5424;
+  color: #ffffff;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  -webkit-appearance: none;
+}
+.button:hover, .button:focus {
+  background: #EB5424;
+}
+
+.button-block {
+  display: block;
+  width: 100%;
+}
+
+.center-text {
+  margin-top: -20px;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+#error-message {
+  display: none;
+}
+
+#success-message {
+  display: none;
+}
+
+#inner {
+  display: table;
+  margin: 0 auto;
+  padding-bottom: 10px;
+}
+
+/* Loader */
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #EB5424;
+  border-bottom: 16px solid #EB5424;
+  width: 120px;
+  height: 120px;
+  position: fixed;
+  z-index: 999;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Social Buttons */
+.btn-social{position:relative;padding-left:44px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.btn-social>:first-child{position:absolute;left:0;top:0;bottom:0;width:32px;line-height:34px;font-size:1.6em;text-align:center;border-right:1px solid rgba(0,0,0,0.2)}
+.btn-social.btn-lg{padding-left:61px}.btn-social.btn-lg>:first-child{line-height:45px;width:45px;font-size:1.8em}
+.btn-social.btn-sm{padding-left:38px}.btn-social.btn-sm>:first-child{line-height:28px;width:28px;font-size:1.4em}
+.btn-social.btn-xs{padding-left:30px}.btn-social.btn-xs>:first-child{line-height:20px;width:20px;font-size:1.2em}
+.btn-social-icon{position:relative;padding-left:44px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;height:34px;width:34px;padding:0}.btn-social-icon>:first-child{position:absolute;left:0;top:0;bottom:0;width:32px;line-height:34px;font-size:1.6em;text-align:center;border-right:1px solid rgba(0,0,0,0.2)}
+.btn-social-icon.btn-lg{padding-left:61px}.btn-social-icon.btn-lg>:first-child{line-height:45px;width:45px;font-size:1.8em}
+.btn-social-icon.btn-sm{padding-left:38px}.btn-social-icon.btn-sm>:first-child{line-height:28px;width:28px;font-size:1.4em}
+.btn-social-icon.btn-xs{padding-left:30px}.btn-social-icon.btn-xs>:first-child{line-height:20px;width:20px;font-size:1.2em}
+.btn-social-icon>:first-child{border:none;text-align:center;width:100% !important}
+.btn-social-icon.btn-lg{height:45px;width:45px;padding-left:0;padding-right:0}
+.btn-social-icon.btn-sm{height:30px;width:30px;padding-left:0;padding-right:0}
+.btn-social-icon.btn-xs{height:22px;width:22px;padding-left:0;padding-right:0}
+.btn-facebook{color:#fff;background-color:#3b5998;border-color:rgba(0,0,0,0.2)}.btn-facebook:focus,.btn-facebook.focus{color:#fff;background-color:#2d4373;border-color:rgba(0,0,0,0.2)}
+.btn-facebook:hover{color:#fff;background-color:#2d4373;border-color:rgba(0,0,0,0.2)}
+.btn-facebook:active,.btn-facebook.active,.open>.dropdown-toggle.btn-facebook{color:#fff;background-color:#2d4373;border-color:rgba(0,0,0,0.2)}.btn-facebook:active:hover,.btn-facebook.active:hover,.open>.dropdown-toggle.btn-facebook:hover,.btn-facebook:active:focus,.btn-facebook.active:focus,.open>.dropdown-toggle.btn-facebook:focus,.btn-facebook:active.focus,.btn-facebook.active.focus,.open>.dropdown-toggle.btn-facebook.focus{color:#fff;background-color:#23345a;border-color:rgba(0,0,0,0.2)}
+.btn-facebook:active,.btn-facebook.active,.open>.dropdown-toggle.btn-facebook{background-image:none}
+.btn-facebook.disabled:hover,.btn-facebook[disabled]:hover,fieldset[disabled] .btn-facebook:hover,.btn-facebook.disabled:focus,.btn-facebook[disabled]:focus,fieldset[disabled] .btn-facebook:focus,.btn-facebook.disabled.focus,.btn-facebook[disabled].focus,fieldset[disabled] .btn-facebook.focus{background-color:#3b5998;border-color:rgba(0,0,0,0.2)}
+.btn-facebook .badge{color:#3b5998;background-color:#fff}
+.btn-google{color:#fff;background-color:#dd4b39;border-color:rgba(0,0,0,0.2)}.btn-google:focus,.btn-google.focus{color:#fff;background-color:#c23321;border-color:rgba(0,0,0,0.2)}
+.btn-google:hover{color:#fff;background-color:#c23321;border-color:rgba(0,0,0,0.2)}
+.btn-google:active,.btn-google.active,.open>.dropdown-toggle.btn-google{color:#fff;background-color:#c23321;border-color:rgba(0,0,0,0.2)}.btn-google:active:hover,.btn-google.active:hover,.open>.dropdown-toggle.btn-google:hover,.btn-google:active:focus,.btn-google.active:focus,.open>.dropdown-toggle.btn-google:focus,.btn-google:active.focus,.btn-google.active.focus,.open>.dropdown-toggle.btn-google.focus{color:#fff;background-color:#a32b1c;border-color:rgba(0,0,0,0.2)}
+.btn-google:active,.btn-google.active,.open>.dropdown-toggle.btn-google{background-image:none}
+.btn-google.disabled:hover,.btn-google[disabled]:hover,fieldset[disabled] .btn-google:hover,.btn-google.disabled:focus,.btn-google[disabled]:focus,fieldset[disabled] .btn-google:focus,.btn-google.disabled.focus,.btn-google[disabled].focus,fieldset[disabled] .btn-google.focus{background-color:#dd4b39;border-color:rgba(0,0,0,0.2)}
+.btn-google .badge{color:#dd4b39;background-color:#fff}
+.btn-twitter{color:#fff;background-color:#55acee;border-color:rgba(0,0,0,0.2)}.btn-twitter:focus,.btn-twitter.focus{color:#fff;background-color:#2795e9;border-color:rgba(0,0,0,0.2)}
+.btn-twitter:hover{color:#fff;background-color:#2795e9;border-color:rgba(0,0,0,0.2)}
+.btn-twitter:active,.btn-twitter.active,.open>.dropdown-toggle.btn-twitter{color:#fff;background-color:#2795e9;border-color:rgba(0,0,0,0.2)}.btn-twitter:active:hover,.btn-twitter.active:hover,.open>.dropdown-toggle.btn-twitter:hover,.btn-twitter:active:focus,.btn-twitter.active:focus,.open>.dropdown-toggle.btn-twitter:focus,.btn-twitter:active.focus,.btn-twitter.active.focus,.open>.dropdown-toggle.btn-twitter.focus{color:#fff;background-color:#1583d7;border-color:rgba(0,0,0,0.2)}
+.btn-twitter:active,.btn-twitter.active,.open>.dropdown-toggle.btn-twitter{background-image:none}
+.btn-twitter.disabled:hover,.btn-twitter[disabled]:hover,fieldset[disabled] .btn-twitter:hover,.btn-twitter.disabled:focus,.btn-twitter[disabled]:focus,fieldset[disabled] .btn-twitter:focus,.btn-twitter.disabled.focus,.btn-twitter[disabled].focus,fieldset[disabled] .btn-twitter.focus{background-color:#55acee;border-color:rgba(0,0,0,0.2)}
+.btn-twitter .badge{color:#55acee;background-color:#fff}
+  </style>
+</head>
+
+<body>
+  <section><div id="loader" class="loader"></div><div class="container"><div class="auth0-form"><div class="login-header"><img src="https://cdn.auth0.com/styleguide/1.0.0/img/badge.svg"/><h3 id="client-title">Welcome to Auth0</h3></div><br/><ul class="tab-group"><li class="tab active"><a href="#login">Log In</a></li><li class="tab"><a href="#signup">Sign Up</a></li></ul><div id="error-message" class="alert alert-danger"></div><div id="success-message" class="alert alert-success"></div><div class="tab-content"><div id="login"><div id="login-social" class="field-wrap"><a class="btn btn-block btn-social btn-facebook" href="#facebook"><span class="fa fa-facebook"></span> Login with Facebook</a><a class="btn btn-block btn-social btn-twitter" href="#twitter"><span class="fa fa-twitter"></span> Login with Twitter</a><a class="btn btn-block btn-social btn-google" href="#google"><span class="fa fa-google"></span> Login with Google</a></div><form id="login-form"><div id="outer" style="width:100%"><div id="inner">or</div></div><div class="field-wrap"><label>Email Address<span class="req">*</span></label><input id="login_username" type="email" required autocomplete="off"/></div><div class="field-wrap"><label>Password<span class="req">*</span></label><input id="login_password" type="password" required autocomplete="off"/></div><br/><p class="center-text"><a href="#change-pwd">Don't remember your password?</a></p><button class="button button-block">Log In</button></form></div><!-- forgot password --><div id="change-password" style='display:none'><h2>Reset your password</h2><form id="lost-form"><div class="field-wrap"><label>Enter your email<span class="req">*</span></label><input id="forgot-email"/></div><button class="button button-block">Send Email</button></form></div><div id="signup"><div class="field-wrap"><a class="btn btn-block btn-social btn-facebook" href="#facebook"><span class="fa fa-facebook"></span> Signup with Facebook</a><a class="btn btn-block btn-social btn-twitter" href="#twitter"><span class="fa fa-twitter"></span> Signup with Twitter</a><a class="btn btn-block btn-social btn-google" href="#google"><span class="fa fa-google"></span> Signup with Google</a></div><div id="outer" style="width:100%"><div id="inner">or</div></div><form id="signup-form"><div class="field-wrap"><label>First Name<span class="req">*</span></label><input id="signup_first_name" type="text" required autocomplete="off" /></div><div class="field-wrap"><label>Last Name<span class="req">*</span></label><input id="signup_last_name" type="text" required autocomplete="off"/></div><div class="field-wrap"><label>Email Address<span class="req">*</span></label><input id="signup_email" type="email" required autocomplete="off"/></div><div class="field-wrap"><label>Password<span class="req">*</span></label><input id="signup_password" type="password" required autocomplete="off"/></div><button type="submit" class="button button-block">Sign Up</button></form></div></div><!-- tab-content --><!-- Passwordless --><div id="passwordless"><div id="enter-email-phone"><br/><div id="outer" style="width:100%"><div id="inner">or</div></div><h2>Use Passwordless!</h2><p class="center-text">Enter your email / mobile number to sign in or create an account</p><div class="field-wrap"><label> Email or Phone number<span class="req">*</span></label><input id="email-or-phone"/></div><button id="send_code" class="button button-block">Send OTP</button></div><div id="enter-code" class="field-wrap" style='display:none'><p id="pwdless-message" class="center-text"></p><div class="field-wrap"><label> Enter the verification code</label><input id="code" class="form-control"/></div><br/><p class="center-text"><a href="#no-code">Did not get the code?</a></p><button id="verify_code" class="button btn-block">Verify OTP</button></div><hr><div id="outer" style="width:100%"><div id="inner">Protected by <strong><a href="https://auth0.com" target="_blank">Auth0</a></strong></div></div> <!-- /passwordless --></div></div> <!-- /auth0-container --></div></section>
+  <script src="//code.jquery.com/jquery-3.1.0.min.js"></script>
+  <script src="//cdn.auth0.com/js/polyfills/1.0/object-assign.min.js"></script>
+  <script src="//cdn.auth0.com/js/auth0/8.12.0/auth0.min.js"></script>
+  <script>
+  
+$(document).ready(function () {
+  var loader = $('#loader').hide();
+  var usePasswordless = false;
+  $('.auth0-form').find('input, textarea').on('keyup blur focus', function (e) {
+    
+    var $this = $(this),
+        label = $this.prev('label');
+
+      if (e.type === 'keyup') {
+        if ($this.val() === '') {
+            label.removeClass('active highlight');
+          } else {
+            label.addClass('active highlight');
+          }
+      } else if (e.type === 'blur') {
+        if( $this.val() === '' ) {
+          label.removeClass('active highlight'); 
+        } else {
+          label.removeClass('highlight');   
+        }   
+      } else if (e.type === 'focus') {
+        
+        if( $this.val() === '' ) {
+          label.removeClass('highlight'); 
+        } 
+        else if( $this.val() !== '' ) {
+          label.addClass('highlight');
+        }
+      }
+
+  });
+
+  $('.tab a').on('click', function (e) {
+    
+    e.preventDefault();
+    if (usePasswordless) return;    
+    $(this).parent().addClass('active');
+    $(this).parent().siblings().removeClass('active');
+    
+    target = $(this).attr('href');
+    if (target === '#login') {
+      $('#login-form').show();
+      $('#login-social').show();
+      $('#passwordless').show();
+      $('#change-password').hide();
+    }
+    $('.tab-content > div').not(target).hide();
+    
+    $(target).fadeIn(600);
+    
+  });
+
+  // Auth0 Implementation.
+  var config = JSON.parse(decodeURIComponent(escape(window.atob('@@config@@'))));
+
+
+  var defaultConnection = 'Username-Password-Authentication';
+  var connection = config.connection ? config.connection : defaultConnection;
+  var title = config.dict.signin.title;
+  var params = Object.assign({
+    domain: config.auth0Domain,
+    clientID: config.clientID,
+    redirectUri: config.callbackURL,
+    responseType: config.responseType ? config.responseType : 'code',
+  }, config.internalOptions);
+  var webAuth = new auth0.WebAuth(params);
+  var authenticate = new auth0.Authentication({
+          domain: config.auth0Domain,
+          clientID: config.clientID
+        });
+
+  if (title) {
+    $("#client-title").text(title);
+  }
+
+  /*
+  * Passwordless
+  */
+
+  $('#send_code').click(function (e) {
+    console.log("sending code...");
+    e.preventDefault();
+    var emailOrPhone = $('#email-or-phone').val();
+    if ($('#email-or-phone').val() !== '') {
+      sendEmailOrSMS(emailOrPhone);
+    } else {
+      alert('Email or Phone number is required');
+    }
+  });
+
+  $('#verify_code').click(function (e) {
+    e.preventDefault();
+    loginWithPasswordless();
+  });
+
+  /*
+  * Helpers
+  */
+
+  function sendEmailOrSMS(emailOrPhone){
+    var type = getEmailOrPhone(emailOrPhone);
+    var startParams;
+    if (type === 'email') {
+      startParams = {
+        connection: 'email',
+        email: emailOrPhone,
+        send: 'code'
+      };
+    } else if (type === 'sms') {
+      startParams = {
+        connection: 'sms',
+        phoneNumber: emailOrPhone,
+        send: 'code'
+      };
+    } else {
+      displayError({description: 'Enter a valid Email or Phonenumber'});
+    }
+    if (startParams) {
+      loader.show();
+      webAuth.passwordlessStart(startParams, function(err, result) {
+        if (err) {
+          loader.hide();
+          displayError(err);
+          return;
+        }
+        loader.hide();
+        usePasswordless = true;
+        displayPasswordlessMessage(type, emailOrPhone);
+        $('#login-form').hide();
+        $('#login-social').hide();
+        $('#enter-email-phone').hide();
+        $('#enter-code').show();
+      });
+    }
+  };
+      
+  function getEmailOrPhone (emailOrPhone) {
+    var emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    // Accepts only Australia numbers
+    var phoneNumberRegex = /(^:\+?61|62|81)?(?:\(0\)[23478]|\(?0?[23478]\)?)\d{8}/;
+    if (emailRegex.test(emailOrPhone)) {
+      return "email";
+    } else if (phoneNumberRegex.test(emailOrPhone)){
+      return "sms";
+    } else {
+      return "none";
+    }
+  };
+
+  function loginWithPasswordless(){
+    var emailOrPhone = $('#email-or-phone').val();
+    var code = $('#code').val();
+    var type = getEmailOrPhone(emailOrPhone);
+    var verifyParams = {};
+
+    if (type === 'email') {
+      verifyParams = {
+        connection: 'email',
+        verificationCode: code,
+        email: emailOrPhone
+      };
+    } else if (type === 'sms'){
+        verifyParams = {
+        connection: 'sms',
+        verificationCode: code,
+        phoneNumber: emailOrPhone,
+         
+      };
+    } else {
+      alert('Enter a valid Email or Phonenumber');
+    }
+    webAuth.passwordlessVerify(verifyParams, function(err){
+      if (err) displayError(err);
+    });  
+  };
+
+  /* Display Error / Success*/
+
+  function displayError(err) {
+    var errorMessage = document.getElementById('error-message');
+    errorMessage.innerHTML = err.description;
+    errorMessage.style.display = 'block';
+  };
+
+  function displayChangePasswordMessage(msg) {
+    var successMessage = document.getElementById('success-message');
+    successMessage.innerHTML = msg;
+    successMessage.style.display = 'block';
+  };
+
+  function displayPasswordlessMessage(type, emailOrPhone) {
+    var pwdlessMessage = document.getElementById('pwdless-message');
+    var message = 'An ' + type + ' with the code has been sent to ' + emailOrPhone + '.'
+    pwdlessMessage.innerHTML = message;
+    pwdlessMessage.style.display = 'block';
+  };
+  /*
+  * Social Login / Signup
+  */
+
+  $('a[href="#google"]').click(function (e) {
+    e.preventDefault();
+    loginWithSocial('google-oauth2');
+  });
+
+  $('a[href="#twitter"]').click(function (e) {
+    e.preventDefault();
+    loginWithSocial('twitter');
+  });
+
+  $('a[href="#facebook"]').click(function (e) {
+    e.preventDefault();
+    loginWithSocial('facebook');
+  });
+
+  function loginWithSocial(provider) {
+    loader.show();
+    webAuth.authorize({
+      connection: provider
+    }, function(err) {
+      loader.hide();
+      if (err) displayError(err);
+    });
+  };  
+
+  /*
+  * Database Login / Signup / Reset Password
+  */
+
+  $("form").submit(function () {
+    var options = {};
+    switch (this.id) {
+      case "login-form":
+
+        var $lg_username = $('#login_username').val();
+        var $lg_password = $('#login_password').val();
+  
+        options.username = $lg_username;
+        options.password = $lg_password;
+        options.connection = connection;
+        webAuth.redirect.loginWithCredentials(options, function(err) {
+          if (err) displayError(err);
+        });
+        break;
+
+      case "signup-form":
+        var email = $('#signup_email').val();
+        var password = $('#signup_password').val();
+        var first_name = $('#signup_first_name').val();
+        var last_name = $('#signup_last_name').val();
+
+        options.email = email;
+        options.password = password;
+        options.user_metadata = {
+          first_name: first_name,
+          last_name: last_name
+        };
+        options.connection = connection;
+        webAuth.redirect.signupAndLogin(options, function(err) {
+          if (err) displayError(err);
+        });
+        break;
+      case "lost-form":
+          var email=$('#forgot-email').val();
+          options.email = email;
+          options.connection = connection;
+          authenticate.dbConnection.changePassword(options, function (err, result) {
+            if (err) {
+              displayError(err);
+            } else {
+              $('#login-form').show();
+              $('#login-social').show();
+              $('#enter-email-phone').show();
+              $('#change-password').hide();
+              displayChangePasswordMessage(result);
+            }
+          });
+
+      default:
+        return false;
+    }
+    return false;
+  });
+
+  /*
+  * Reset Password
+  */
+
+  $('a[href="#change-pwd"]').click(function (e) {
+    e.preventDefault();
+    $('#login-form').hide();
+    $('#login-social').hide();
+    $('#passwordless').hide();
+    $('#change-password').show();
+  });
+
+  $('a[href="#no-code"]').click(function (e) {
+    e.preventDefault();
+    usePasswordless = false;
+    $('#login-form').show();
+    $('#login-social').show();
+    $('#enter-email-phone').show();
+    $('#enter-code').hide();
+  });
+
+
+});
+  </script>
+
+</body>
+</html>
