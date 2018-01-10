@@ -355,26 +355,9 @@ $(document).ready(function () {
     
   });
 
-// Auth0 Implementation.
-var config = {};
+  // Auth0 Implementation.
+  var config = JSON.parse(decodeURIComponent(escape(window.atob('@@config@@'))));
 
-  //Make auth0Hosted = false for local testing.
-  var auth0Hosted = true;
-  if (auth0Hosted) {
-    config = JSON.parse(decodeURIComponent(escape(window.atob('@@config@@'))));
-  } else {
-    // for local testing.
-    config = {
-      auth0Domain: 'YOUR_AUTH0_DOMAIN',
-      clientID: 'YOUR_CLIENT_ID',
-      callbackURL: 'YOUR_CALLBACK_URL',
-      responseType: 'token id_token',
-      dict: {
-        signin: {
-          title: 'Welcome to Auth0'
-        }
-      }
-    };
 
   var defaultConnection = 'Username-Password-Authentication';
   var connection = config.connection ? config.connection : defaultConnection;
