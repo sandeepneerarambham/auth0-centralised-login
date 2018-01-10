@@ -15,6 +15,7 @@ Sample project to demostrate [auth0.js](https://github.com/auth0/auth0.js)
 
 To run it locally:
 
+* Make auth0Hosted = false for local testing in [index.html](https://github.com/vikasjayaram/auth0-centralised-login/blob/master/centralised-page/index.html)
 * Populate the config object
 
 ```bash
